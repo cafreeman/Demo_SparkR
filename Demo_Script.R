@@ -39,6 +39,8 @@ printSchema(estDF)
 
 persist(estDF, "MEMORY_ONLY")
 
+# Convert to R data.frames ----
+
 train <- collect(trainDF) ; train$ID <- NULL
 
 est <- collect(estDF)
