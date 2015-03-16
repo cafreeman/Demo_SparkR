@@ -1,5 +1,4 @@
-# Demo_SparkR
-Slides and Demo Script for SparkRSQL Presentation
+# Slides and Demo Script for SparkRSQL Presentation
 
 This repo contains both Keynote and Powerpoint versions of the presentation, as well as the R scripts and IPython Notebook used in the presentation.
 
