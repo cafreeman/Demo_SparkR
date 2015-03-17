@@ -10,15 +10,24 @@ sample <- loadDF(sqlCtx, paste(getwd(), "/DM_Sample.parquet", sep = ""), "parque
 
 printSchema(txnsRaw)
 
+head(txnsRaw)
+
 # Aggregate Transaction Data ----
 perCustomer <- agg(groupBy(txnsRaw,"cust_id"),
-                   txnsRaw$cust_id,
                    txns = countDistinct(txnsRaw$day_num),
                    spend = sum(txnsRaw$extended_price))
 
 head(perCustomer)
 
 # Bring In Demographic Data ----
+joinToDemo <- select(join(perCustomer, demo),
+                     demo$"*",
+                     perCustomer$txns, 
+                     perCustomer$spend)
+
+explain(joinToDemo)
+
+# What's wrong this picture? ----
 joinToDemo <- select(join(perCustomer, demo, perCustomer$cust_id == demo$ID),
                      demo$"*",
                      perCustomer$txns, 
@@ -39,6 +48,8 @@ printSchema(estDF)
 
 persist(estDF, "MEMORY_ONLY")
 
+count(estDF)
+
 # Convert to R data.frames ----
 
 train <- collect(trainDF) ; train$ID <- NULL
@@ -46,6 +57,8 @@ train <- collect(trainDF) ; train$ID <- NULL
 est <- collect(estDF)
 
 class(est)
+names(est)
+summary(est)
 
 # Estimate logit model, create custom scoring function, score customers ----
 theModel <- glm(respondYes ~ ., "binomial", train)
